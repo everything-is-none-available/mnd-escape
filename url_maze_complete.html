@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>수수께끼 연구소 - 완료!</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Creepster&family=Orbitron:wght@400;700;900&display=swap');
+        
+        body {
+            font-family: 'Orbitron', monospace;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460);
+            color: #00ff41;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            animation: victoryPulse 3s ease-in-out infinite alternate;
+        }
+        
+        @keyframes victoryPulse {
+            0% { background: linear-gradient(135deg, #1a1a2e, #16213e, #0f3460); }
+            50% { background: linear-gradient(135deg, #0f3460, #1a1a2e, #16213e); }
+            100% { background: linear-gradient(135deg, #16213e, #0f3460, #1a1a2e); }
+        }
+        
+        .container {
+            max-width: 900px;
+            width: 95%;
+            background: rgba(0, 0, 0, 0.8);
+            border: 3px solid #00ff41;
+            border-radius: 15px;
+            padding: 40px;
+            box-shadow: 0 0 80px rgba(0, 255, 65, 0.5), inset 0 0 30px rgba(0, 255, 65, 0.2);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                repeating-linear-gradient(
+                    90deg,
+                    transparent,
+                    transparent 2px,
+                    rgba(0, 255, 65, 0.05) 2px,
+                    rgba(0, 255, 65, 0.05) 4px
+                );
+            pointer-events: none;
+        }
+        
+        .status-bar {
+            background: rgba(0, 255, 65, 0.2);
+            border: 2px solid #00ff41;
+            padding: 15px 25px;
+            border-radius: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            font-weight: bold;
+            font-size: 1em;
+            animation: successGlow 2s ease-in-out infinite alternate;
+        }
+        
+        @keyframes successGlow {
+            0% { box-shadow: 0 0 20px rgba(0, 255, 65, 0.3); }
+            100% { box-shadow: 0 0 40px rgba(0, 255, 65, 0.6); }
+        }
+        
+        .victory-title {
+            font-family: 'Creepster', cursive;
+            font-size: 3.5em;
+            margin: 30px 0;
+            text-shadow: 
+                0 0 20px #00ff41,
+                0 0 40px #00ff41,
+                0 0 60px #00ff41;
+            animation: victoryGlitch 3s infinite;
+        }
+        
+        @keyframes victoryGlitch {
+            0%, 90%, 100% { transform: translate(0); }
+            92% { transform: translate(-2px, -1px); }
+            94% { transform: translate(2px, 1px); }
+            96% { transform: translate(-1px, 2px); }
+            98% { transform: translate(1px, -2px); }
+        }
+        
+        .story-panel {
+            background: rgba(0, 255, 65, 0.1);
+            border: 2px solid rgba(0, 255, 65, 0.5);
+            border-radius: 15px;
+            padding: 30px;
+            margin: 30px 0;
+            text-align: left;
+            line-height: 1.8;
+            position: relative;
+        }
+        
+        .story-panel::before {
+            content: "🎉";
+            position: absolute;
+            top: -15px;
+            left: 25px;
+            background: #0c0c0c;
+            padding: 0 15px;
+            font-size: 1.5em;
+        }
+        
+        .trophy-display {
+            font-size: 8em;
+            margin: 40px 0;
+            animation: trophySpin 4s ease-in-out infinite;
+            filter: drop-shadow(0 0 30px rgba(255, 215, 0, 0.8));
+        }
+        
+        @keyframes trophySpin {
+            0%, 100% { transform: rotateY(0deg) scale(1); }
+            25% { transform: rotateY(90deg) scale(1.1); }
+            50% { transform: rotateY(180deg) scale(1); }
+            75% { transform: rotateY(270deg) scale(1.1); }
+        }
+        
+        .stats-display {
+            background: linear-gradient(145deg, rgba(0, 255, 65, 0.1), rgba(0, 255, 65, 0.05));
+            border: 2px solid rgba(0, 255, 65, 0.4);
+            border-radius: 15px;
+            padding: 25px;
+            margin: 30px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 1.1em;
+            line-height: 1.6;
+        }
+        
+        .btn {
+            background: linear-gradient(45deg, #00ff41, #39ff14);
+            border: none;
+            border-radius: 30px;
+            padding: 20px 40px;
+            font-size: 18px;
+            color: #000;
+            cursor: pointer;
+            margin: 20px;
+            transition: all 0.3s ease;
+            font-weight: bold;
+            font-family: 'Orbitron', monospace;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            box-shadow: 0 0 20px rgba(0, 255, 65, 0.3);
+        }
+        
+        .btn:hover {
+            transform: translateY(-5px) scale(1.05);
+            box-shadow: 0 15px 35px rgba(0, 255, 65, 0.5);
+            background: linear-gradient(45deg, #39ff14, #00ff41);
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(0, 255, 65, 0.2);
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 15px 0;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00ff41, #39ff14, #00ff41);
+            border-radius: 4px;
+            width: 100%;
+            animation: progressComplete 2s ease-in-out;
+        }
+        
+        @keyframes progressComplete {
+            0% { width: 0%; }
+            100% { width: 100%; }
+        }
+        
+        .fireworks {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+        
+        .firework {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: #00ff41;
+            border-radius: 50%;
+            animation: explode 2s ease-out infinite;
+        }
+        
+        @keyframes explode {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(20);
+                opacity: 0;
+            }
+        }
+        
+        .celebration-message {
+            background: linear-gradient(45deg, rgba(255, 215, 0, 0.2), rgba(0, 255, 65, 0.2));
+            border: 2px solid #ffd700;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 30px 0;
+            font-size: 1.3em;
+            font-weight: bold;
+            color: #ffd700;
+            animation: celebrationPulse 2s ease-in-out infinite alternate;
+        }
+        
+        @keyframes celebrationPulse {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.02); }
+        }
+    </style>
+</head>
+<body>
+    <div class="fireworks" id="fireworks"></div>
+    
+    <div class="container">
+        <div class="status-bar">
+            <span>📍 깜짝 파티룸</span>
+            <span>🎉 미션 완료!</span>
+            <span id="finalTimer">⏱️ 완료!</span>
+        </div>
+        
+        <div class="progress-bar">
+            <div class="progress-fill"></div>
+        </div>
+        
+        <h1 class="victory-title">🏆 VICTORY! 🏆</h1>
+        
+        <div class="celebration-message">
+            ✨ 축하합니다! 모든 수수께끼를 완벽하게 풀어냈습니다! ✨
+        </div>
+        
+        <div class="trophy-display">🥇</div>
+        
+        <div class="story-panel">
+            <strong>🎊 대단해요! 모든 수수께끼를 풀었습니다! 🎊</strong><br><br>
+            연구소 탐험을 완료했습니다! 선배가 준비한 깜짝 파티였네요. 
+            입구 홀에서 시작해서 휴게실, 화장실, 방송실, 시간연구실, 비밀의 방을 거쳐 
+            마침내 이곳 파티룸에 도착했습니다!<br><br>
+            <strong style="color: #ffd700;">🌟 정말 훌륭한 추리력과 끈기를 보여주셨습니다! 🌟</strong><br><br>
+            친구들과 함께 한 이 모험이 즐거우셨나요? 
+            각자 다른 URL로 접근하면서 순서대로 진행하는 재미가 있었을 거예요!
+        </div>
+        
+        <div class="stats-display">
+            🏆 <strong>GAME COMPLETE!</strong> 🏆<br>
+            📊 수수께끼 해결: 7/7 (100%)<br>
+            🧠 추리 능력: 마스터 등급<br>
+            ⏱️ 완료 시간: <span id="completionTime"></span><br>
+            🎯 달성도: PERFECT!<br>
+            <br>
+            <strong style="color: #ffd700;">"당신은 진정한 수수께끼 마스터입니다!"</strong>
+        </div>
+        
+        <div style="margin: 40px 0;">
+            <button class="btn" onclick="restartGame()">🔄 새로운 게임 시작</button>
+            <button class="btn" onclick="shareGame()" style="background: linear-gradient(45deg, #ff6b6b, #ee5a24); color: white;">📤 친구들과 공유</button>
+        </div>
+        
+        <div class="celebration-message" style="font-size: 1em; border-color: #00ff41; color: #00ff41;">
+            <strong>🎮 게임 정보</strong><br>
+            • 총 7단계의 수수께끼를 모두 완료했습니다<br>
+            • 각 단계마다 고유한 URL로 접근하는 진짜 미궁 게임<br>
+            • 친구들과 함께 즐기기에 완벽한 난이도<br>
+            • 언제든 다시 플레이할 수 있습니다!
+        </div>
+    </div>
+
+    <script>
+        // 완료 시간 계산 및 표시
+        function displayCompletionTime() {
+            const startTime = localStorage.getItem('gameStartTime');
+            if (startTime) {
+                const totalTime = Math.floor((Date.now() - parseInt(startTime)) / 1000);
+                const minutes = Math.floor(totalTime / 60).toString().padStart(2, '0');
+                const seconds = (totalTime % 60).toString().padStart(2, '0');
+                
+                document.getElementById('completionTime').textContent = `${minutes}:${seconds}`;
+                document.getElementById('finalTimer').textContent = `⏱️ ${minutes}:${seconds}`;
+            }
+        }
+        
+        // 폭죽 효과 생성
+        function createFireworks() {
+            const fireworksContainer = document.getElementById('fireworks');
+            
+            for (let i = 0; i < 20; i++) {
+                setTimeout(() => {
+                    const firework = document.createElement('div');
+                    firework.className = 'firework';
+                    firework.style.left = Math.random() * 100 + '%';
+                    firework.style.top = Math.random() * 100 + '%';
+                    firework.style.animationDelay = Math.random() * 2 + 's';
+                    
+                    const colors = ['#00ff41', '#ff4757', '#ffd700', '#ff6b6b', '#3742fa'];
+                    firework.style.background = colors[Math.floor(Math.random() * colors.length)];
+                    
+                    fireworksContainer.appendChild(firework);
+                    
+                    setTimeout(() => {
+                        firework.remove();
+                    }, 2000);
+                }, i * 200);
+            }
+        }
+        
+        function restartGame() {
+            localStorage.removeItem('gameStartTime');
+            window.location.href = '/index.html';
+        }
+        
+        function shareGame() {
+            const gameUrl = window.location.origin;
+            
+            if (navigator.share) {
+                navigator.share({
+                    title: '🧩 수수께끼 연구소',
+                    text: '재미있는 온라인 미궁 수수께끼 게임을 해보세요!',
+                    url: gameUrl
+                });
+            } else {
+                // 클립보드에 복사
+                navigator.clipboard.writeText(gameUrl).then(() => {
+                    alert('게임 링크가 클립보드에 복사되었습니다!\n친구들과 공유해보세요! 🎉');
+                });
+            }
+        }
+        
+        // 페이지 로드 시 실행
+        window.addEventListener('load', function() {
+            displayCompletionTime();
+            createFireworks();
+            
+            // 5초마다 폭죽 효과 반복
+            setInterval(createFireworks, 5000);
+        });
+    </script>
+</body>
+</html>

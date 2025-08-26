@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>수수께끼 연구소 - 방송실</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Creepster&family=Orbitron:wght@400;700;900&display=swap');
+        
+        body {
+            font-family: 'Orbitron', monospace;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #0c0c0c, #1a1a2e, #16213e);
+            color: #00ff41;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            animation: backgroundPulse 4s ease-in-out infinite alternate;
+        }
+        
+        @keyframes backgroundPulse {
+            0% { background: linear-gradient(135deg, #0c0c0c, #1a1a2e, #16213e); }
+            100% { background: linear-gradient(135deg, #16213e, #0c0c0c, #1a1a2e); }
+        }
+        
+        .container {
+            max-width: 900px;
+            width: 95%;
+            background: rgba(0, 0, 0, 0.8);
+            border: 2px solid #00ff41;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 0 50px rgba(0, 255, 65, 0.3), inset 0 0 20px rgba(0, 255, 65, 0.1);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                repeating-linear-gradient(
+                    90deg,
+                    transparent,
+                    transparent 2px,
+                    rgba(0, 255, 65, 0.03) 2px,
+                    rgba(0, 255, 65, 0.03) 4px
+                );
+            pointer-events: none;
+        }
+        
+        .status-bar {
+            background: rgba(0, 255, 65, 0.1);
+            border: 1px solid #00ff41;
+            padding: 10px 20px;
+            border-radius: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            font-weight: bold;
+            font-size: 0.9em;
+        }
+        
+        .glitch {
+            font-family: 'Creepster', cursive;
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            text-shadow: 
+                0 0 10px #00ff41,
+                0 0 20px #00ff41,
+                0 0 30px #00ff41;
+            animation: glitch 2s infinite;
+        }
+        
+        @keyframes glitch {
+            0%, 100% { transform: translate(0); }
+            10% { transform: translate(-2px, -1px); }
+            20% { transform: translate(2px, 1px); }
+            30% { transform: translate(-1px, 2px); }
+            40% { transform: translate(1px, -2px); }
+        }
+        
+        .story-panel {
+            background: rgba(0, 255, 65, 0.05);
+            border: 1px solid rgba(0, 255, 65, 0.3);
+            border-radius: 10px;
+            padding: 25px;
+            margin: 25px 0;
+            text-align: left;
+            line-height: 1.6;
+            position: relative;
+        }
+        
+        .story-panel::before {
+            content: "📡";
+            position: absolute;
+            top: -10px;
+            left: 20px;
+            background: #0c0c0c;
+            padding: 0 10px;
+            font-size: 1.2em;
+        }
+        
+        .puzzle-container {
+            background: linear-gradient(145deg, rgba(0, 255, 65, 0.05), rgba(0, 255, 65, 0.02));
+            border: 2px solid rgba(0, 255, 65, 0.4);
+            border-radius: 15px;
+            padding: 30px;
+            margin: 30px 0;
+            position: relative;
+        }
+        
+        .puzzle-type {
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #0c0c0c;
+            color: #ff4757;
+            padding: 5px 15px;
+            border-radius: 15px;
+            font-size: 0.8em;
+            font-weight: bold;
+            border: 1px solid #ff4757;
+        }
+        
+        .hint-panel {
+            background: rgba(255, 193, 7, 0.1);
+            border: 1px solid #ffc107;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 20px 0;
+            color: #ffc107;
+            font-style: italic;
+        }
+        
+        .code-display {
+            font-family: 'Courier New', monospace;
+            background: #000;
+            border: 2px solid #00ff41;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            font-size: 1.2em;
+            letter-spacing: 1px;
+            box-shadow: inset 0 0 20px rgba(0, 255, 65, 0.2);
+        }
+        
+        input[type="text"] {
+            background: rgba(0, 0, 0, 0.8);
+            border: 2px solid #00ff41;
+            border-radius: 25px;
+            padding: 15px 25px;
+            font-size: 16px;
+            width: 250px;
+            margin: 10px;
+            text-align: center;
+            color: #00ff41;
+            font-family: 'Orbitron', monospace;
+            font-weight: bold;
+        }
+        
+        input[type="text"]::placeholder {
+            color: rgba(0, 255, 65, 0.5);
+        }
+        
+        input[type="text"]:focus {
+            outline: none;
+            box-shadow: 0 0 20px rgba(0, 255, 65, 0.5);
+            animation: inputGlow 1s ease-in-out;
+        }
+        
+        @keyframes inputGlow {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+        
+        .btn {
+            background: linear-gradient(45deg, #ff4757, #ff3742);
+            border: none;
+            border-radius: 25px;
+            padding: 15px 30px;
+            font-size: 16px;
+            color: white;
+            cursor: pointer;
+            margin: 10px;
+            transition: all 0.3s ease;
+            font-weight: bold;
+            font-family: 'Orbitron', monospace;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(255, 71, 87, 0.4);
+            background: linear-gradient(45deg, #ff3742, #ff4757);
+        }
+        
+        .message {
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            font-weight: bold;
+            display: none;
+            animation: slideIn 0.3s ease;
+        }
+        
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .error-message {
+            background: rgba(255, 71, 87, 0.2);
+            border: 2px solid #ff4757;
+            color: #ff4757;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: rgba(0, 255, 65, 0.2);
+            border-radius: 3px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00ff41, #39ff14);
+            border-radius: 3px;
+            width: 57.2%;
+        }
+        
+        .success-glow {
+            background: rgba(0, 255, 65, 0.3);
+            border: 2px solid #00ff41;
+            color: #00ff41;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            font-size: 1.2em;
+        }
+        
+        .sound-wave {
+            display: inline-block;
+            margin: 0 5px;
+            animation: soundWave 1.5s ease-in-out infinite;
+        }
+        
+        @keyframes soundWave {
+            0%, 100% { transform: scaleY(1); }
+            50% { transform: scaleY(1.5); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="status-bar">
+            <span>📍 방송실 스튜디오</span>
+            <span>레벨: 4/7</span>
+            <span id="timer">⏱️ 00:00</span>
+        </div>
+        
+        <div class="progress-bar">
+            <div class="progress-fill"></div>
+        </div>
+        
+        <h1 class="glitch">🎙️ 방송실의 비밀</h1>
+        
+        <div class="success-glow">
+            ✅ <strong>"거울"</strong> 정답입니다! 자신의 모습을 잘 관찰하셨네요!
+        </div>
+        
+        <div class="story-panel">
+            <strong>📢 방송실 탐험</strong><br><br>
+            복도를 걷다가 방송실을 발견했습니다. 마이크 근처에 재미있는 수수께끼가 붙어있네요. 
+            방송실의 장비들이 웅웅거리며 소리를 내고 있습니다. 이 수수께끼는 소리와 관련된 것 같아요!
+            <br><br>
+            <span class="sound-wave">🎵</span><span class="sound-wave">🎶</span><span class="sound-wave">🎵</span>
+            마이크에 대고 말해보세요... "야호!"
+        </div>
+        
+        <div class="puzzle-container">
+            <div class="puzzle-type">🔊 소리 수수께끼</div>
+            <div class="hint-panel">
+                💡 힌트: 산에서 "야호!"라고 외치면 돌아오는 그것!
+            </div>
+            <div class="code-display">
+                🗣️ 당신이 말하면 나도 따라 한다<br>
+                🤫 당신이 조용하면 나도 조용하다<br>
+                🏔️ 큰 곳에서는 크게 들리고<br>
+                🏠 작은 곳에서는 작게 들린다<br>
+                👥 나는 당신의 목소리지만 당신이 아니다<br><br>
+                나는 무엇일까요?
+            </div>
+        </div>
+        
+        <div class="navigation-area">
+            <input type="text" id="answerInput" placeholder="정답을 영어로 입력하세요...">
+            <button class="btn" onclick="checkAnswer()">🔓 제출</button>
+            <div class="message error-message" id="errorMessage">
+                ❌ 틀렸습니다! 마이크에 소리를 내보세요!
+            </div>
+        </div>
+        
+        <div class="hint-panel" style="margin-top: 30px; background: rgba(0, 255, 65, 0.1); color: #00ff41;">
+            <strong>🎯 진행상황:</strong> 3/7 완료 - 이제 절반을 넘었어요! 👏
+        </div>
+    </div>
+
+    <script>
+        // 타이머 업데이트
+        function updateTimer() {
+            const startTime = localStorage.getItem('gameStartTime');
+            if (startTime) {
+                const elapsed = Math.floor((Date.now() - parseInt(startTime)) / 1000);
+                const minutes = Math.floor(elapsed / 60).toString().padStart(2, '0');
+                const seconds = (elapsed % 60).toString().padStart(2, '0');
+                document.getElementById('timer').textContent = `⏱️ ${minutes}:${seconds}`;
+            }
+        }
+        
+        function checkAnswer() {
+            const input = document.getElementById('answerInput');
+            const userAnswer = input.value.toLowerCase().trim();
+            const correctAnswer = "echo";
+            
+            const errorMsg = document.getElementById('errorMessage');
+            
+            if (userAnswer === correctAnswer) {
+                // 정답! 다음 페이지로 이동
+                window.location.href = `/${correctAnswer}.html`;
+            } else {
+                // 오답 처리
+                errorMsg.style.display = 'block';
+                input.style.animation = 'none';
+                setTimeout(() => {
+                    input.style.animation = 'inputGlow 0.5s ease-in-out';
+                    errorMsg.style.display = 'none';
+                }, 3000);
+            }
+            
+            input.value = '';
+        }
+        
+        // Enter 키로 답안 제출
+        document.getElementById('answerInput').addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                checkAnswer();
+            }
+        });
+        
+        // 타이머 시작
+        setInterval(updateTimer, 1000);
+        updateTimer();
+    </script>
+</body>
+</html>

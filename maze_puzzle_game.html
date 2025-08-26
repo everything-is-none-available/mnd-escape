@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>미스터리 연구소 탈출 게임</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Creepster&family=Orbitron:wght@400;700;900&display=swap');
+        
+        body {
+            font-family: 'Orbitron', monospace;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #0c0c0c, #1a1a2e, #16213e);
+            color: #00ff41;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            animation: backgroundPulse 4s ease-in-out infinite alternate;
+        }
+        
+        @keyframes backgroundPulse {
+            0% { background: linear-gradient(135deg, #0c0c0c, #1a1a2e, #16213e); }
+            100% { background: linear-gradient(135deg, #16213e, #0c0c0c, #1a1a2e); }
+        }
+        
+        .container {
+            max-width: 900px;
+            width: 95%;
+            background: rgba(0, 0, 0, 0.8);
+            border: 2px solid #00ff41;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 0 50px rgba(0, 255, 65, 0.3), inset 0 0 20px rgba(0, 255, 65, 0.1);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                repeating-linear-gradient(
+                    90deg,
+                    transparent,
+                    transparent 2px,
+                    rgba(0, 255, 65, 0.03) 2px,
+                    rgba(0, 255, 65, 0.03) 4px
+                );
+            pointer-events: none;
+        }
+        
+        .status-bar {
+            background: rgba(0, 255, 65, 0.1);
+            border: 1px solid #00ff41;
+            padding: 10px 20px;
+            border-radius: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            font-weight: bold;
+            font-size: 0.9em;
+        }
+        
+        .glitch {
+            font-family: 'Creepster', cursive;
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            text-shadow: 
+                0 0 10px #00ff41,
+                0 0 20px #00ff41,
+                0 0 30px #00ff41;
+            animation: glitch 2s infinite;
+        }
+        
+        @keyframes glitch {
+            0%, 100% { transform: translate(0); }
+            10% { transform: translate(-2px, -1px); }
+            20% { transform: translate(2px, 1px); }
+            30% { transform: translate(-1px, 2px); }
+            40% { transform: translate(1px, -2px); }
+        }
+        
+        .story-panel {
+            background: rgba(0, 255, 65, 0.05);
+            border: 1px solid rgba(0, 255, 65, 0.3);
+            border-radius: 10px;
+            padding: 25px;
+            margin: 25px 0;
+            text-align: left;
+            line-height: 1.6;
+            position: relative;
+        }
+        
+        .story-panel::before {
+            content: "📡";
+            position: absolute;
+            top: -10px;
+            left: 20px;
+            background: #0c0c0c;
+            padding: 0 10px;
+            font-size: 1.2em;
+        }
+        
+        .puzzle-container {
+            background: linear-gradient(145deg, rgba(0, 255, 65, 0.05), rgba(0, 255, 65, 0.02));
+            border: 2px solid rgba(0, 255, 65, 0.4);
+            border-radius: 15px;
+            padding: 30px;
+            margin: 30px 0;
+            position: relative;
+        }
+        
+        .puzzle-type {
+            position: absolute;
+            top: -15px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #0c0c0c;
+            color: #ff4757;
+            padding: 5px 15px;
+            border-radius: 15px;
+            font-size: 0.8em;
+            font-weight: bold;
+            border: 1px solid #ff4757;
+        }
+        
+        .hint-panel {
+            background: rgba(255, 193, 7, 0.1);
+            border: 1px solid #ffc107;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 20px 0;
+            color: #ffc107;
+            font-style: italic;
+        }
+        
+        .code-display {
+            font-family: 'Courier New', monospace;
+            background: #000;
+            border: 2px solid #00ff41;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            font-size: 1.2em;
+            letter-spacing: 1px;
+            box-shadow: inset 0 0 20px rgba(0, 255, 65, 0.2);
+        }
+        
+        .matrix-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin: 25px 0;
+            max-width: 400px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .matrix-cell {
+            background: rgba(0, 255, 65, 0.1);
+            border: 2px solid #00ff41;
+            border-radius: 8px;
+            padding: 15px;
+            font-size: 1.3em;
+            font-weight: bold;
+            min-height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+        
+        .matrix-cell:hover {
+            background: rgba(0, 255, 65, 0.2);
+            transform: scale(1.05);
+        }
+        
+        .missing-cell {
+            background: rgba(255, 71, 87, 0.2);
+            border-color: #ff4757;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 0.7; }
+            50% { opacity: 1; }
+        }
+        
+        .image-puzzle {
+            max-width: 100%;
+            border: 2px solid #00ff41;
+            border-radius: 10px;
+            margin: 20px 0;
+            box-shadow: 0 0 30px rgba(0, 255, 65, 0.3);
+        }
+        
+        .navigation-area {
+            margin-top: 40px;
+        }
+        
+        input[type="text"] {
+            background: rgba(0, 0, 0, 0.8);
+            border: 2px solid #00ff41;
+            border-radius: 25px;
+            padding: 15px 25px;
+            font-size: 16px;
+            width: 250px;
+            margin: 10px;
+            text-align: center;
+            color: #00ff41;
+            font-family: 'Orbitron', monospace;
+            font-weight: bold;
+        }
+        
+        input[type="text"]::placeholder {
+            color: rgba(0, 255, 65, 0.5);
+        }
+        
+        input[type="text"]:focus {
+            outline: none;
+            box-shadow: 0 0 20px rgba(0, 255, 65, 0.5);
+            animation: inputGlow 1s ease-in-out;
+        }
+        
+        @keyframes inputGlow {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+        
+        .btn {
+            background: linear-gradient(45deg, #ff4757, #ff3742);
+            border: none;
+            border-radius: 25px;
+            padding: 15px 30px;
+            font-size: 16px;
+            color: white;
+            cursor: pointer;
+            margin: 10px;
+            transition: all 0.3s ease;
+            font-weight: bold;
+            font-family: 'Orbitron', monospace;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(255, 71, 87, 0.4);
+            background: linear-gradient(45deg, #ff3742, #ff4757);
+        }
+        
+        .btn:active {
+            transform: translateY(0);
+        }
+        
+        .message {
+            padding: 15px;
+            border-radius: 10px;
+            margin: 15px 0;
+            font-weight: bold;
+            display: none;
+            animation: slideIn 0.3s ease;
+        }
+        
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .error-message {
+            background: rgba(255, 71, 87, 0.2);
+            border: 2px solid #ff4757;
+            color: #ff4757;
+        }
+        
+        .success-message {
+            background: rgba(0, 255, 65, 0.2);
+            border: 2px solid #00ff41;
+            color: #00ff41;
+        }
+        
+        .timer {
+            font-size: 1.2em;
+            color: #ffc107;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: rgba(0, 255, 65, 0.2);
+            border-radius: 3px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00ff41, #39ff14);
+            border-radius: 3px;
+            transition: width 0.5s ease;
+        }
+        
+        .binary-text {
+            font-family: 'Courier New', monospace;
+            color: #00ff41;
+            font-size: 0.9em;
+            line-height: 1.2;
+            word-break: break-all;
+            background: rgba(0, 255, 65, 0.05);
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+        }
+        
+        .cipher-wheel {
+            width: 200px;
+            height: 200px;
+            border: 3px solid #00ff41;
+            border-radius: 50%;
+            margin: 20px auto;
+            position: relative;
+            background: radial-gradient(circle, rgba(0, 255, 65, 0.1), transparent);
+        }
+        
+        .wheel-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 0.8em;
+            text-align: center;
+            line-height: 1.2;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="status-bar">
+            <span id="locationIndicator">📍 연구소 입구</span>
+            <span id="levelIndicator">보안 레벨: 1/7</span>
+            <span class="timer" id="timer">⏱️ 00:00</span>
+        </div>
+        
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+        </div>
+        
+        <h1 class="glitch" id="pageTitle">🧩 수수께끼 연구소</h1>
+        
+        <div id="puzzleArea">
+            <!-- Level 0: 스토리 시작 -->
+            <div id="level0">
+                <div class="story-panel">
+                    <strong>🌙 심야 연구소에 오신 것을 환영합니다 🌙</strong><br><br>
+                    당신은 연구소의 새로운 인턴입니다. 첫 날 밤, 선배가 장난으로 여러 방에 수수께끼를 숨겨놓았습니다! 
+                    각 방의 수수께끼를 풀면서 연구소를 탐험해보세요.<br><br>
+                    <strong style="color: #00ff41;">재미있는 모험이 시작됩니다! 🎭</strong>
+                </div>
+                <div class="puzzle-container">
+                    <div class="puzzle-type">🚪 첫 번째 방</div>
+                    <p><strong>입구 홀에서 첫 번째 수수께끼를 발견했습니다!</strong></p>
+                    <div class="hint-panel">
+                        💡 힌트: 빛과 어둠에 대해 생각해보세요!
+                    </div>
+                    <div class="code-display">
+                        🌅 나는 낮에는 짧고<br>
+                        🌇 저녁에는 길어진다<br>
+                        🌙 밤에는 사라지지만<br>
+                        ☀️ 아침이 오면 다시 나타난다<br><br>
+                        나는 무엇일까요?
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Level 1: 수수께끼 -->
+            <div id="level1" style="display: none;">
+                <div class="story-panel">
+                    <strong>🕯️ 휴게실 발견!</strong><br><br>
+                    첫 번째 수수께끼를 풀었네요! 이제 아늑한 휴게실에 들어왔습니다. 
+                    테이블 위에 또 다른 쪽지가 놓여있습니다.
+                </div>
+                <div class="puzzle-container">
+                    <div class="puzzle-type">🔥 두 번째 수수께끼</div>
+                    <div class="hint-panel">
+                        💡 힌트: 생일 케이크를 생각해보세요!
+                    </div>
+                    <div class="code-display">
+                        🎂 나는 작은 몸집이지만<br>
+                        💨 바람을 무서워한다<br>
+                        🔥 머리 위에 불꽃을 이고 살며<br>
+                        💧 물을 만나면 죽는다<br><br>
+                        나는 무엇일까요?
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Level 2: 관찰 수수께끼 -->
+            <div id="level2" style="display: none;">
+                <div class="story-panel">
+                    <strong>🪞 화장실에서 발견한 메시지</strong><br><br>
+                    휴게실을 나와 화장실에 들렀는데, 거울에 수증기로 쓰여진 글씨를 발견했습니다! 
+                    누군가 샤워 후에 장난으로 적어놓은 것 같네요.
+                </div>
+                <div class="puzzle-container">
+                    <div class="puzzle-type">👀 관찰 퍼즐</div>
+                    <div class="hint-panel">
+                        💡 힌트: 지금 당신이 이 수수께끼를 읽으면서 보고 있는 것은?
+                    </div>
+                    <div class="code-display">
+                        👤 나는 당신을 따라다니지만<br>
+                        🚶‍♂️ 당신보다 먼저 움직일 수 없다<br>
+                        💡 밝은 곳에서는 선명하고<br>
+                        🌙 어두운 곳에서는 흐릿하다<br>
+                        🔄 당신이 돌면 나도 돈다<br><br>
+                        나는 무엇일까요?
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Level 3: 소리 수수께끼 -->
+            <div id="level3" style="display: none;">
+                <div class="story-panel">
+                    <strong>📢 방송실 탐험</strong><br><br>
+                    복도를 걷다가 방송실을 발견했습니다. 마이크 근처에 재미있는 수수께끼가 붙어있네요. 
+                    소리와 관련된 것 같습니다!
+                </div>
+                <div class="puzzle-container">
+                    <div class="puzzle-type">🔊 소리 수수께끼</div>
+                    <div class="hint-panel">
+                        💡 힌트: 산에서 "야호!"라고 외치면 돌아오는 그것!
+                    </div>
+                    <div class="code-display">
+                        🗣️ 당신이 말하면 나도 따라 한다<br>
+                        🤫 당신이 조용하면 나도 조용하다<br>
+                        🏔️ 큰 곳에서는 크게 들리고<br>
+                        🏠 작은 곳에서는 작게 들린다<br>
+                        👥 나는 당신의 목소리지만 당신이 아니다<br><br>
+                        나는 무엇일까요?
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Level 4: 시간 수수께끼 -->
+            <div id="level4" style="display: none;">
+                <div class="story-panel">
+                    <strong>⏰ 시간 연구실 입장</strong><br><br>
+                    연구소에는 시간을 연구하는 특별한 방이 있습니다. 벽에 여러 개의 시계가 걸려있고, 
+                    책상 위에 시간과 관련된 수수께끼가 놓여있습니다.
+                </div>
+                <div class="puzzle-container">
+                    <div class="puzzle-type">⏳ 시간의 비밀</div>
+                    <div class="hint-panel">
+                        💡 힌트: 과거, 현재, 미래 중에서 아직 오지 않은 것은?
+                    </div>
+                    <div class="code-display">
+                        ⏪ 과거는 이미 지나갔고<br>
+                        ⏸️ 현재는 지금 여기 있다<br>
+                        ⏩ 나는 아직 오지 않았지만<br>
+                        🎯 모든 사람이 나를 기다린다<br>
+                        🌟 꿈과 희망이 나에게 있다<br><br>
+                        나는 무엇일까요?
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Level 5: 마지막 추리 -->
+            <div id="level5" style="display: none;">
+                <div class="story-panel">
+                    <strong>🔐 비밀의 방 발견!</strong><br><br>
+                    마침내 연구소의 숨겨진 비밀의 방을 찾았습니다! 
+                    문 앞에 마지막 수수께끼가 적혀있습니다. 이것을 풀면 무엇이 기다리고 있을까요?
+                </div>
+                <div class="puzzle-container">
+                    <div class="puzzle-type">🕵️ 최종 추리</div>
+                    <div class="hint-panel">
+                        💡 힌트: 가슴 속 깊이 간직하고 있는, 다른 사람에게 말하기 어려운 것!
+                    </div>
+                    <div class="code-display">
+                        🤐 나는 말하면 사라지고<br>
+                        🔒 간직하면 무거워진다<br>
+                        💭 모든 사람이 나를 가지고 있지만<br>
+                        🤫 쉽게 드러내지 않는다<br>
+                        💝 가까운 사람에게만 털어놓는다<br><br>
+                        나는 무엇일까요?
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Level 6: 마지막 문제 -->
+            <div id="level6" style="display: none;">
+                <div class="story-panel">
+                    <strong>🎉 비밀의 방 안에서</strong><br><br>
+                    와! 비밀의 방 안에는 아름다운 파티 준비가 되어있었습니다! 
+                    벽에 마지막 메시지가 걸려있네요. 이것이 진짜 마지막일까요?
+                </div>
+                <div class="puzzle-container">
+                    <div class="puzzle-type">💝 마지막 선물</div>
+                    <div class="hint-panel">
+                        💡 힌트: 이 게임을 함께 하고 있는 사람들! 함께 할 때 더 재미있는 것!
+                    </div>
+                    <div class="code-display">
+                        👫 혼자서는 재미가 반이지만<br>
+                        👥 함께하면 두 배가 된다<br>
+                        😊 기쁨을 나누면 더 커지고<br>
+                        😢 슬픔을 나누면 작아진다<br>
+                        💕 평생을 함께할 수 있는 소중한 것<br><br>
+                        나는 무엇일까요?
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 완료 페이지 -->
+            <div id="complete" style="display: none;">
+                <div class="story-panel" style="border-color: #00ff41; background: rgba(0, 255, 65, 0.1);">
+                    <strong>🎊 축하합니다! 모든 수수께끼를 풀었어요! 🎊</strong><br><br>
+                    연구소 탐험을 완료했습니다! 선배가 준비한 깜짝 파티였네요. 
+                    모든 수수께끼를 푸느라 수고많았습니다. 정말 훌륭한 추리력을 보여주셨어요!<br><br>
+                    <strong style="color: #00ff41;">친구들과 함께한 시간이 즐거우셨나요? 🌟</strong>
+                </div>
+                <div style="font-size: 6em; margin: 30px 0; animation: glitch 2s infinite;">🎉</div>
+                <div class="code-display">
+                    🏆 CONGRATULATIONS! 🏆<br>
+                    수수께끼 해결: 7/7<br>
+                    추리 능력: 마스터 등급<br>
+                    완료 시간: <span id="finalTime"></span><br>
+                    <br>
+                    "진정한 수수께끼 마스터가 되었습니다!"
+                </div>
+                <button class="btn" onclick="restartGame()">🔄 새로운 수수께끼 도전</button>
+            </div>
+        </div>
+        
+        <div class="navigation-area">
+            <div id="inputArea">
+                <input type="text" id="answerInput" placeholder="암호를 입력하세요...">
+                <button class="btn" onclick="checkAnswer()">🔓 해독</button>
+            </div>
+            <div class="message error-message" id="errorMessage">
+                ❌ 접근 거부! 다시 시도하세요.
+            </div>
+            <div class="message success-message" id="successMessage">
+                ✅ 보안 해제 성공! 다음 구역으로 이동 중...
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentLevel = 0;
+        const answers = ["shadow", "candle", "mirror", "echo", "future", "secret", "friend"];
+        const maxLevel = 6;
+        let startTime = Date.now();
+        let timerInterval;
+        
+        const locations = [
+            "📍 연구소 입구 홀",
+            "📍 아늑한 휴게실", 
+            "📍 화장실 거울 앞",
+            "📍 방송실 스튜디오",
+            "📍 시간 연구실",
+            "📍 비밀의 방 입구",
+            "📍 깜짝 파티룸",
+            "📍 게임 완료!"
+        ];
+        
+        function startTimer() {
+            startTime = Date.now();
+            timerInterval = setInterval(updateTimer, 1000);
+        }
+        
+        function updateTimer() {
+            const elapsed = Math.floor((Date.now() - startTime) / 1000);
+            const minutes = Math.floor(elapsed / 60).toString().padStart(2, '0');
+            const seconds = (elapsed % 60).toString().padStart(2, '0');
+            document.getElementById('timer').textContent = `⏱️ ${minutes}:${seconds}`;
+        }
+        
+        function updateProgress() {
+            const progress = ((currentLevel + 1) / (maxLevel + 2)) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+        }
+        
+        function checkAnswer() {
+            const input = document.getElementById('answerInput');
+            const userAnswer = input.value.toLowerCase().trim();
+            const correctAnswer = answers[currentLevel].toLowerCase();
+            
+            const errorMsg = document.getElementById('errorMessage');
+            const successMsg = document.getElementById('successMessage');
+            
+            errorMsg.style.display = 'none';
+            successMsg.style.display = 'none';
+            
+            if (userAnswer === correctAnswer) {
+                successMsg.style.display = 'block';
+                setTimeout(() => {
+                    nextLevel();
+                    successMsg.style.display = 'none';
+                }, 2000);
+            } else {
+                errorMsg.style.display = 'block';
+                input.style.animation = 'none';
+                setTimeout(() => {
+                    input.style.animation = 'inputGlow 0.5s ease-in-out';
+                    errorMsg.style.display = 'none';
+                }, 3000);
+            }
+            
+            input.value = '';
+        }
+        
+        function nextLevel() {
+            document.getElementById(`level${currentLevel}`).style.display = 'none';
+            currentLevel++;
+            
+            if (currentLevel > maxLevel) {
+                clearInterval(timerInterval);
+                const elapsed = Math.floor((Date.now() - startTime) / 1000);
+                const minutes = Math.floor(elapsed / 60).toString().padStart(2, '0');
+                const seconds = (elapsed % 60).toString().padStart(2, '0');
+                document.getElementById('finalTime').textContent = `${minutes}:${seconds}`;
+                
+                document.getElementById('complete').style.display = 'block';
+                document.getElementById('inputArea').style.display = 'none';
+                document.getElementById('locationIndicator').textContent = locations[currentLevel];
+                document.getElementById('levelIndicator').textContent = 'STATUS: COMPLETE';
+                document.getElementById('pageTitle').textContent = '🎉 MISSION COMPLETE';
+            } else {
+                document.getElementById(`level${currentLevel}`).style.display = 'block';
+                document.getElementById('locationIndicator').textContent = locations[currentLevel];
+                document.getElementById('levelIndicator').textContent = `보안 레벨: ${currentLevel + 1}/${maxLevel + 1}`;
+                
+                if (window.history && window.history.pushState) {
+                    window.history.pushState({}, '', `#level${currentLevel}`);
+                }
+            }
+            
+            updateProgress();
+        }
+        
+        function restartGame() {
+            currentLevel = 0;
+            clearInterval(timerInterval);
+            
+            for (let i = 0; i <= maxLevel; i++) {
+                document.getElementById(`level${i}`).style.display = 'none';
+            }
+            document.getElementById('complete').style.display = 'none';
+            
+            document.getElementById('level0').style.display = 'block';
+            document.getElementById('inputArea').style.display = 'block';
+            document.getElementById('locationIndicator').textContent = locations[0];
+            document.getElementById('levelIndicator').textContent = '보안 레벨: 1/7';
+            document.getElementById('pageTitle').textContent = '🧩 수수께끼 연구소';
+            
+            updateProgress();
+            startTimer();
+            
+            if (window.history && window.history.pushState) {
+                window.history.pushState({}, '', '#start');
+            }
+        }
+        
+        // Enter 키로 답안 제출
+        document.getElementById('answerInput').addEventListener('keypress', function(event) {
+            if (event.key === 'Enter') {
+                checkAnswer();
+            }
+        });
+        
+        // 페이지 로드 시 초기화
+        window.addEventListener('load', function() {
+            updateProgress();
+            startTimer();
+        });
+    </script>
+</body>
+</html>
